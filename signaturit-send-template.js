@@ -1,21 +1,26 @@
 // signaturit-send-template.js
 const puppeteer = require('puppeteer');
-require('dotenv').config();
+require('dotenv').config(); // This will still run but won't affect the hardcoded vars below
 
 async function sendForSignature(RECIPIENT_NAME, RECIPIENT_EMAIL) {
     const startTime = Date.now();
     console.log(`[${new Date(startTime).toISOString()}] sendForSignature called for: ${RECIPIENT_EMAIL}, Name: ${RECIPIENT_NAME}`);
 
-    // ─── ENV CHECK ────────────────────────────────────────────────────────
-    console.log(`[${new Date().toISOString()}] Checking environment variables...`);
-    console.log(`[${new Date().toISOString()}] process.env.SIGNATURIT_EMAIL: "${process.env.SIGNATURIT_EMAIL}"`);
-    console.log(`[${new Date().toISOString()}] process.env.SIGNATURIT_PASSWORD: "${process.env.SIGNATURIT_PASSWORD ? '********' : undefined}"`); // Don't log actual password
-    const { SIGNATURIT_EMAIL, SIGNATURIT_PASSWORD } = process.env;
-    if (!SIGNATURIT_EMAIL || !SIGNATURIT_PASSWORD) {
-        const errorMsg = 'Missing SIGNATURIT_EMAIL or SIGNATURIT_PASSWORD in environment';
-        console.error(`[${new Date().toISOString()}] ${errorMsg}`);
-        throw new Error(errorMsg);
-    }
+    // ─── ENV CHECK (TEMPORARILY HARDCODED FOR TESTING) ───────────────────
+    console.log(`[${new Date().toISOString()}] Using hardcoded credentials for testing...`);
+    const SIGNATURIT_EMAIL = 'victorortin@vegaconsultores.es';
+    const SIGNATURIT_PASSWORD = 'luigivega95';
+
+    // console.log(`[${new Date().toISOString()}] Checking environment variables...`);
+    // console.log(`[${new Date().toISOString()}] process.env.SIGNATURIT_EMAIL: "${process.env.SIGNATURIT_EMAIL}"`);
+    // console.log(`[${new Date().toISOString()}] process.env.SIGNATURIT_PASSWORD: "${process.env.SIGNATURIT_PASSWORD ? '********' : undefined}"`); // Don't log actual password
+    // const { SIGNATURIT_EMAIL_ENV, SIGNATURIT_PASSWORD_ENV } = process.env; // Renamed to avoid conflict if needed
+    // if (!SIGNATURIT_EMAIL || !SIGNATURIT_PASSWORD) { // This check will now use the hardcoded values
+    //     const errorMsg = 'Missing SIGNATURIT_EMAIL or SIGNATURIT_PASSWORD in environment (this should not happen with hardcoding)';
+    //     console.error(`[${new Date().toISOString()}] ${errorMsg}`);
+    //     throw new Error(errorMsg);
+    // }
+    // ───────────────────────────────────────────────────────────────────────
 
     // ─── STATIC CONFIG ─────────────────────────────────────────────────────
     const TEMPLATE_NAME = 'segmento III (fisica - juridica)'; // Kept hardcoded as per original
@@ -63,8 +68,6 @@ async function sendForSignature(RECIPIENT_NAME, RECIPIENT_EMAIL) {
         await page.type('#password-password-input', SIGNATURIT_PASSWORD);
         console.log(`[${new Date().toISOString()}] Clicking login button...`);
         await page.click('button[data-signa="login-submit-button"]');
-        // It's good to wait for some navigation or element indicating successful login
-        // For example, waiting for the dashboard URL or a specific dashboard element
         await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 20000 });
         console.log(`[${new Date().toISOString()}] Login successful, navigated to dashboard area.`);
 
@@ -115,7 +118,7 @@ async function sendForSignature(RECIPIENT_NAME, RECIPIENT_EMAIL) {
 
         // 6. Wait for the recipients modal to appear
         console.log(`[${new Date().toISOString()}] Waiting for recipients modal (#addBody) to appear...`);
-        await page.waitForSelector('#addBody', { timeout: 15000, visible: true }); // Increased timeout slightly
+        await page.waitForSelector('#addBody', { timeout: 15000, visible: true });
         console.log(`[${new Date().toISOString()}] Recipients modal appeared.`);
 
         // 7. TYPE INTO THE NAME & EMAIL FIELDS
@@ -141,45 +144,27 @@ async function sendForSignature(RECIPIENT_NAME, RECIPIENT_EMAIL) {
         console.log(`[${new Date().toISOString()}] Waiting for send button: ${sendButtonSelector}`);
         await page.waitForSelector(sendButtonSelector, { timeout: 15000, visible: true });
         console.log(`[${new Date().toISOString()}] Clicking final send document button...`);
-        await page.click('#send-document'); // Using the non-variable selector directly
+        await page.click('#send-document');
         console.log(`[${new Date().toISOString()}] Final send document button clicked.`);
 
         // --- ADDED CONFIRMATION STEP ---
         console.log(`[${new Date().toISOString()}] Waiting for send confirmation (modal #addBody to disappear)...`);
         try {
-            await page.waitForSelector('#addBody', { hidden: true, timeout: 25000 }); // Slightly increased timeout
+            await page.waitForSelector('#addBody', { hidden: true, timeout: 25000 });
             console.log(`[${new Date().toISOString()}] Send confirmation: Modal disappeared.`);
         } catch (e) {
             console.warn(`[${new Date().toISOString()}] Did not receive expected send confirmation (modal did not disappear). Details: ${e.message}`);
-            // Consider taking a screenshot if possible in the environment
-            // try {
-            //     const screenshotPath = `confirmation_error_${Date.now()}.png`;
-            //     await page.screenshot({ path: screenshotPath });
-            //     console.log(`[${new Date().toISOString()}] Screenshot taken: ${screenshotPath}`);
-            // } catch (screenshotError) {
-            //     console.error(`[${new Date().toISOString()}] Failed to take screenshot: ${screenshotError.message}`);
-            // }
         }
         // --- END OF ADDED CONFIRMATION STEP ---
         const endTime = Date.now();
         console.log(`[${new Date(endTime).toISOString()}] Puppeteer actions for ${RECIPIENT_EMAIL} completed. Total time: ${(endTime - startTime) / 1000}s.`);
-        return true; // Explicitly return something on success
+        return true;
 
     } catch (error) {
         const errorTime = Date.now();
         console.error(`[${new Date(errorTime).toISOString()}] Error in sendForSignature puppeteer script for ${RECIPIENT_EMAIL}:`, error.message);
         console.error(`[${new Date(errorTime).toISOString()}] Full error stack:`, error.stack);
-        // Consider taking a screenshot on error if possible
-        // if (page) {
-        //     try {
-        //         const errorScreenshotPath = `error_${Date.now()}.png`;
-        //         await page.screenshot({ path: errorScreenshotPath });
-        //         console.log(`[${new Date().toISOString()}] Error screenshot taken: ${errorScreenshotPath}`);
-        //     } catch (screenshotError) {
-        //         console.error(`[${new Date().toISOString()}] Failed to take error screenshot: ${screenshotError.message}`);
-        //     }
-        // }
-        throw error; // Re-throw the error to be caught by the server
+        throw error;
     } finally {
         if (browser) {
             console.log(`[${new Date().toISOString()}] Closing browser for ${RECIPIENT_EMAIL}...`);
