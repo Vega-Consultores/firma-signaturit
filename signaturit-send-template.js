@@ -15,8 +15,8 @@ async function sendForSignature(RECIPIENT_NAME, RECIPIENT_EMAIL) {
 
     // 1. Launch browser
     const browser = await puppeteer.launch({
-        headless: false, // Kept false for observation, change to true for production
-        devtools: true,
+        headless: true, // Kept false for observation, change to true for production
+        devtools: false,
         defaultViewport: null,
         args: [
             '--no-sandbox',
