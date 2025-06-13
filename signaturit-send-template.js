@@ -11,7 +11,7 @@ const puppeteer = require('puppeteer');
     // ─── STATIC CONFIG ─────────────────────────────────────────────
     const EMAIL = process.env.SIGNATURIT_EMAIL;
     const PASSWORD = process.env.SIGNATURIT_PASSWORD;
-    const TEMPLATE_NAME = process.env.TEMPLATE_NAME;
+    const TEMPLATE_NAME = 'segmento III (fisica - juridica)';
     const COOKIE_SELECTOR = '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll';
     // ─────────────────────────────────────────────────────────────────
 
