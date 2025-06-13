@@ -9,9 +9,9 @@ const puppeteer = require('puppeteer');
     }
 
     // ─── STATIC CONFIG ─────────────────────────────────────────────
-    const EMAIL = 'victorortin@vegaconsultores.es';
-    const PASSWORD = 'luigivega95';
-    const TEMPLATE_NAME = 'segmento III (fisica - juridica)';
+    const EMAIL = process.env.SIGNATURIT_EMAIL;
+    const PASSWORD = process.env.SIGNATURIT_PASSWORD;
+    const TEMPLATE_NAME = process.env.TEMPLATE_NAME;
     const COOKIE_SELECTOR = '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll';
     // ─────────────────────────────────────────────────────────────────
 
