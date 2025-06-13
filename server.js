@@ -3,6 +3,12 @@ require('dotenv').config();
 const express = require('express');
 const sendForSignature = require('./signaturit-send-template');
 
+// Log crucial env vars at startup
+console.log(`[${new Date().toISOString()}] Server starting. Checking initial ENV VARS:`);
+console.log(`[${new Date().toISOString()}] Initial process.env.SIGNATURIT_EMAIL: "${process.env.SIGNATURIT_EMAIL}"`);
+console.log(`[${new Date().toISOString()}] Initial process.env.SIGNATURIT_PASSWORD: "${process.env.SIGNATURIT_PASSWORD ? '********' : undefined}"`);
+console.log(`[${new Date().toISOString()}] Initial process.env.PORT: "${process.env.PORT}"`);
+
 const app = express();
 app.use(express.json());
 

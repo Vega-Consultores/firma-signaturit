@@ -7,6 +7,9 @@ async function sendForSignature(RECIPIENT_NAME, RECIPIENT_EMAIL) {
     console.log(`[${new Date(startTime).toISOString()}] sendForSignature called for: ${RECIPIENT_EMAIL}, Name: ${RECIPIENT_NAME}`);
 
     // ─── ENV CHECK ────────────────────────────────────────────────────────
+    console.log(`[${new Date().toISOString()}] Checking environment variables...`);
+    console.log(`[${new Date().toISOString()}] process.env.SIGNATURIT_EMAIL: "${process.env.SIGNATURIT_EMAIL}"`);
+    console.log(`[${new Date().toISOString()}] process.env.SIGNATURIT_PASSWORD: "${process.env.SIGNATURIT_PASSWORD ? '********' : undefined}"`); // Don't log actual password
     const { SIGNATURIT_EMAIL, SIGNATURIT_PASSWORD } = process.env;
     if (!SIGNATURIT_EMAIL || !SIGNATURIT_PASSWORD) {
         const errorMsg = 'Missing SIGNATURIT_EMAIL or SIGNATURIT_PASSWORD in environment';
