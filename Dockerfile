@@ -1,7 +1,7 @@
-# 1) base image with Node
+# 1) base image  
 FROM node:18-slim
 
-# 2) install Chromium and its deps
+# 2) install Chromium & deps for Puppeteer  
 RUN apt-get update && apt-get install -y \
     chromium \
     fonts-liberation \
@@ -10,15 +10,16 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 libdrm2 libgbm1 libasound2 \
   && rm -rf /var/lib/apt/lists/*
 
-# 3) tell Puppeteer where Chrome lives and skip its download
+# 3) tell Puppeteer to use that Chrome  
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# 4) copy your code in
-WORKDIR /app
+# 4) copy & install our code  
+WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm install        # or yarn install
+RUN npm install
 COPY . .
 
-# 5) default command (you can override this in Render/Railway settings)
-CMD ["node", "signaturit-send-template.js"]
+# 5) open port & launch the server  
+EXPOSE 3000
+CMD ["node", "server.js"]
